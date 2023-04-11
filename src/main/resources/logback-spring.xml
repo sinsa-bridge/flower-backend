@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration>
+    <include resource="org/springframework/boot/logging/logback/base.xml"/>
+
+    <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder>
+            <pattern>%d{yyyy-MM-dd HH:mm:ss} - %msg%n</pattern>
+        </encoder>
+    </appender>
+
+    <logger name="jdbc.sqlonly" level="INFO">
+        <appender-ref ref="STDOUT" />
+    </logger>
+    <logger name="jdbc.sqltiming" level="INFO">
+        <appender-ref ref="STDOUT" />
+    </logger>
+    <logger name="jdbc.audit" level="INFO">
+        <appender-ref ref="STDOUT" />
+    </logger>
+    <logger name="jdbc.resultset" level="INFO">
+        <appender-ref ref="STDOUT" />
+    </logger>
+    <logger name="jdbc.resultsettable" level="INFO">
+        <appender-ref ref="STDOUT" />
+    </logger>
+
+    <root level="INFO">
+        <appender-ref ref="STDOUT" />
+    </root>
+</configuration>
