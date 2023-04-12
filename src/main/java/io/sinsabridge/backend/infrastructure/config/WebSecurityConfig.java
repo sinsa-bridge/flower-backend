@@ -2,7 +2,7 @@ package io.sinsabridge.backend.infrastructure.config;
 
 import io.sinsabridge.backend.application.service.UserDetailsServiceImpl;
 import io.sinsabridge.backend.infrastructure.security.CurrentUserHandlerMethodArgumentResolver;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.web.servlet.ServletContextInitializer;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -16,6 +16,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
 import org.springframework.web.method.support.HandlerMethodArgumentResolver;
+import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 import javax.servlet.ServletException;
@@ -25,6 +26,7 @@ import java.io.IOException;
 import java.util.List;
 
 @Configuration
+@EnableWebMvc
 @EnableWebSecurity
 public class WebSecurityConfig extends WebSecurityConfigurerAdapter implements WebMvcConfigurer {
 
@@ -76,5 +78,14 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter implements W
     @Override
     public void addArgumentResolvers(List<HandlerMethodArgumentResolver> resolvers) {
         resolvers.add(currentUserHandlerMethodArgumentResolver());
+    }
+
+    @Bean
+    public ServletContextInitializer servletContextInitializer() {
+        return servletContext -> {
+            // UTF-8로 인코딩 설정
+            servletContext.setInitParameter("defaultHtmlEscape", "true");
+            servletContext.setInitParameter("spring.profiles.active", "local");
+        };
     }
 }

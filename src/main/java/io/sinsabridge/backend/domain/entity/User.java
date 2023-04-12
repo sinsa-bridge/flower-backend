@@ -42,7 +42,7 @@ public class User implements UserDetails {
 
     @Override
     public String getPassword() {
-        // 이 예제에서는 비밀번호 인증을 사용하지 않으므로 null을 반환합니다.
+        //  비밀번호 인증을 사용하지 않으므로 null을 반환합니다.
         return null;
     }
 
@@ -54,26 +54,26 @@ public class User implements UserDetails {
 
     @Override
     public boolean isAccountNonExpired() {
-        // 계정 만료 여부를 확인합니다. 이 예제에서는 만료되지 않는 계정만 사용하므로 true를 반환합니다.
+        // 계정 만료 여부를 확인합니다.  만료되지 않는 계정만 사용하므로 true를 반환합니다.
         return true;
     }
 
     @Override
     public boolean isAccountNonLocked() {
-        // 계정 잠금 여부를 확인합니다. 이 예제에서는 잠기지 않은 계정만 사용하므로 true를 반환합니다.
+        // 계정 잠금 여부를 확인합니다.  잠기지 않은 계정만 사용하므로 true를 반환합니다.
         return true;
     }
 
     @Override
     public boolean isCredentialsNonExpired() {
-        // 인증 정보(비밀번호) 만료 여부를 확인합니다. 이 예제에서는 만료되지 않는 인증 정보만 사용하므로 true를 반환합니다.
+        // 인증 정보(비밀번호) 만료 여부를 확인합니다.  만료되지 않는 인증 정보만 사용하므로 true를 반환합니다.
         return true;
     }
 
     @Override
     public boolean isEnabled() {
         // 사용자 계정이 활성화되어 있는지 확인합니다.
-        // 이 예제에서는 휴대폰 인증이 완료된 사용자만 활성화된 계정으로 간주하고, 그렇지 않은 경우 비활성화된 계정으로 간주합니다.
+        //  휴대폰 인증이 완료된 사용자만 활성화된 계정으로 간주하고, 그렇지 않은 경우 비활성화된 계정으로 간주합니다.
         return isPhoneVerified;
     }
 
