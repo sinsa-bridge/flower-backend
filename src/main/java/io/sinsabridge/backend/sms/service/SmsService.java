@@ -5,8 +5,6 @@ import io.sinsabridge.backend.domain.entity.User;
 import io.sinsabridge.backend.domain.repository.UserRepository;
 import io.sinsabridge.backend.sms.domain.entity.SmsVerification;
 import io.sinsabridge.backend.sms.domain.repository.SmsHistoryRepository;
-
-import io.sinsabridge.backend.sms.domain.entity.SmsHistory;
 import io.sinsabridge.backend.sms.domain.repository.SmsVerificationRepository;
 import io.sinsabridge.backend.sms.presentation.dto.SmsSendRequest;
 import io.sinsabridge.backend.sms.presentation.dto.SmsSendResponse;
@@ -15,10 +13,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
-import java.time.temporal.ChronoUnit;
-import java.util.Comparator;
-import java.util.List;
 import java.util.Optional;
+import java.util.Random;
 
 @Service
 @RequiredArgsConstructor
@@ -40,47 +36,51 @@ public class SmsService {
         SmsSendResponse response = smsSender.send(request);
 
         if (response.isSuccess()) {
-            SmsHistory smsHistory = SmsHistory.builder()
-                    .phoneNumber(phoneNumber)
-                    .sentAt(LocalDateTime.now())
-                    .ipAddress(ipAddress)
-                    .build();
-
-            smsHistoryRepository.save(smsHistory);
+            SmsVerification smsVerification = new SmsVerification();
+            smsVerification.setPhoneNumber(phoneNumber);
+            smsVerification.setVerificationCode(verificationCode);
+            smsVerification.setVerified(false);
+            smsVerification.setVerificationAttempts(0);
+            smsVerification.setLastAttemptTime(LocalDateTime.now());
+            smsVerificationRepository.save(smsVerification);
         }
 
         return response;
     }
 
     private String generateVerificationCode() {
-        int randomCode = (int) (Math.random() * 9000) + 1000;
-        return String.valueOf(randomCode);
-    }
-
-    public Optional<SmsHistory> findRecentSmsHistory(String phoneNumber) {
-        List<SmsHistory> smsHistoryList = smsHistoryRepository.findAllByPhoneNumber(phoneNumber);
-
-        if (smsHistoryList.isEmpty()) {
-            return Optional.empty();
-        }
-
-        SmsHistory mostRecentSmsHistory = smsHistoryList.stream()
-                .max(Comparator.comparing(SmsHistory::getSentAt))
-                .orElseThrow(() -> new IllegalStateException("Unexpected error while finding recent SMS history."));
-
-        return Optional.of(mostRecentSmsHistory);
+        Random random = new Random();
+        int code = random.nextInt(9000) + 1000;
+        return String.valueOf(code);
     }
 
     public boolean verifySmsCode(String phoneNumber, String code) {
         SmsVerification smsVerification = smsVerificationRepository.findByPhoneNumber(phoneNumber);
 
-        if (smsVerification == null) {
-            return false;
+        if (smsVerification != null && !smsVerification.isVerified()) {
+            LocalDateTime now = LocalDateTime.now();
+            LocalDateTime lastAttemptTime = smsVerification.getLastAttemptTime();
+
+            if (smsVerification.getVerificationAttempts() < 3 &&
+                    lastAttemptTime.plusMinutes(1).isAfter(now)) {
+                if (smsVerification.getVerificationCode().equals(code)) {
+                    smsVerification.setVerified(true);
+                    smsVerification.setVerificationTime(now);
+                    smsVerificationRepository.save(smsVerification);
+                    return true;
+                } else {
+                    smsVerification.setVerificationAttempts(smsVerification.getVerificationAttempts() + 1);
+                    smsVerification.setLastAttemptTime(now);
+                    smsVerificationRepository.save(smsVerification);
+
+                    if (smsVerification.getVerificationAttempts() >= 3) {
+                        smsVerification.setLastAttemptTime(now.plusMinutes(5));
+                        smsVerificationRepository.save(smsVerification);
+                    }
+                }
+            }
         }
-
-        long minutesDifference = ChronoUnit.MINUTES.between(smsVerification.getVerificationTime(), LocalDateTime.now());
-
-        return smsVerification.getVerificationCode().equals(code) && minutesDifference <= 5;
+        return false;
     }
 
     @Transactional

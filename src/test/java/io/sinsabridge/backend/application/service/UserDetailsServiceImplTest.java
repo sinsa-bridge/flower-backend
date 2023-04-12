@@ -2,6 +2,7 @@ package io.sinsabridge.backend.application.service;
 
 import io.sinsabridge.backend.domain.entity.User;
 import io.sinsabridge.backend.domain.repository.UserRepository;
+import lombok.extern.java.Log;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -13,12 +14,14 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 
 import java.time.LocalDateTime;
 import java.util.Optional;
+import java.util.logging.Level;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
+@Log
 public class UserDetailsServiceImplTest {
 
     @InjectMocks
@@ -55,9 +58,12 @@ public class UserDetailsServiceImplTest {
         // When
         UserDetails userDetails = userDetailsService.loadUserByUsername(testUser.getPhoneNumber());
 
+
         // Then
         assertEquals(testUser.getPhoneNumber(), userDetails.getUsername());
         assertEquals(testUser.getPassword(), userDetails.getPassword());
+
+        log.log(Level.INFO, testUser.toString());
     }
 
     @Test
