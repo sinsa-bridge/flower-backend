@@ -1,6 +1,8 @@
 // SmsService.java
 package io.sinsabridge.backend.sms.service;
 
+import io.sinsabridge.backend.domain.entity.User;
+import io.sinsabridge.backend.domain.repository.UserRepository;
 import io.sinsabridge.backend.sms.domain.entity.SmsVerification;
 import io.sinsabridge.backend.sms.domain.repository.SmsHistoryRepository;
 
@@ -24,6 +26,7 @@ public class SmsService {
     private final SmsSender smsSender;
     private final SmsHistoryRepository smsHistoryRepository;
     private final SmsVerificationRepository smsVerificationRepository;
+    private final UserRepository userRepository;
 
     @Transactional
     public SmsSendResponse sendVerificationCode(String phoneNumber, String ipAddress) {
@@ -78,5 +81,18 @@ public class SmsService {
         long minutesDifference = ChronoUnit.MINUTES.between(smsVerification.getVerificationTime(), LocalDateTime.now());
 
         return smsVerification.getVerificationCode().equals(code) && minutesDifference <= 5;
+    }
+
+    @Transactional
+    public void updateSmsVerification(User user) {
+        Optional<User> optionalUser = userRepository.findById(user.getId());
+
+        if (optionalUser.isPresent()) {
+            User savedUser = optionalUser.get();
+            savedUser.setSmsVerified(true);
+            userRepository.save(savedUser);
+        } else {
+            throw new IllegalStateException("User not found in the UserRepository.");
+        }
     }
 }

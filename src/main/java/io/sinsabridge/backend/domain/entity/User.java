@@ -49,5 +49,12 @@ public class User {
     private boolean active;
 
     @Column(nullable = false)
+    private boolean smsVerified;
+
+    @Column(nullable = false)
     private LocalDateTime smsVerificationTimestamp;
+
+    public void setSmsVerified(boolean smsVerified) {
+        this.smsVerified = smsVerified;
+    }
 }

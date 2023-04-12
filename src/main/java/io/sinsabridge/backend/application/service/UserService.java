@@ -3,7 +3,6 @@ package io.sinsabridge.backend.application.service;
 
 import io.sinsabridge.backend.domain.entity.User;
 import io.sinsabridge.backend.domain.repository.UserRepository;
-import io.sinsabridge.backend.presentation.dto.UserDto;
 import io.sinsabridge.backend.sms.service.SmsService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -29,7 +28,7 @@ public class UserService {
         }
     }
 
-    public void registerUser(UserDto userDto) {
+    public void registerUser(User userDto) {
         String encryptedPassword = passwordEncoder.encode(userDto.getPhoneNumber());
         User user = User.builder()
                 .phoneNumber(userDto.getPhoneNumber())
@@ -46,5 +45,10 @@ public class UserService {
         userRepository.save(user);
     }
 
-    // 다른 메서드
+    public void updateSmsVerification(User user) {
+        User foundUser = userRepository.findByPhoneNumber(user.getPhoneNumber())
+                .orElseThrow(() -> new IllegalArgumentException("User not found"));
+        foundUser.setSmsVerified(true);
+        userRepository.save(foundUser);
+    }
 }

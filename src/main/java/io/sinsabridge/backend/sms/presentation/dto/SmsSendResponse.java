@@ -11,14 +11,19 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 public class SmsSendResponse {
-    private static final String SUCCESS_STATUS = "2";
+    private static final String SUCCESS_STATUS = "1";
 
-    private String messageId;
-    private String messageStatus;
-    private String errorCode;
-    private String errorMessage;
+    private String result_code;
+    private String message;
+    private String msg_id;
+    private String success_cnt;
+    private String error_cnt;
+    private String msg_type;
+
+
+
 
     public boolean isSuccess() {
-        return SUCCESS_STATUS.equals(messageStatus);
+        return SUCCESS_STATUS.equals(result_code);
     }
 }

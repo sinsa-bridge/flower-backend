@@ -14,7 +14,7 @@ class AligoSmsServiceImplTest {
     @Test
     void aligo() {
         SmsSendRequest smsSendRequest = SmsSendRequest.builder()
-                        .msg("프로그램 테스트").receiver("01087162830").build();
+                        .msg("프로그램 테스트").receiver("01081811891").build();
         aligoSmsServiceImpl.send(smsSendRequest);
     }
 }
