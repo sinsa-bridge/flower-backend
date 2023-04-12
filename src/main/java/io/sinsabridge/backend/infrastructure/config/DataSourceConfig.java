@@ -1,3 +1,4 @@
+/*
 package io.sinsabridge.backend.infrastructure.config;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
@@ -17,3 +18,4 @@ public class DataSourceConfig {
     }
 }
 
+*/

@@ -1,47 +1,42 @@
+// UserService.java
 package io.sinsabridge.backend.application.service;
 
-import io.sinsabridge.backend.application.dto.UserSignUpRequest;
 import io.sinsabridge.backend.domain.entity.User;
+import io.sinsabridge.backend.domain.repository.SmsHistoryRepository;
 import io.sinsabridge.backend.domain.repository.UserRepository;
-import io.sinsabridge.backend.presentation.exception.UserNotFoundException;
+import io.sinsabridge.backend.presentation.dto.UserDto;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import java.util.Optional;
-
 @Service
 public class UserService {
 
-    private final UserRepository userRepository;
-    private final PasswordEncoder passwordEncoder;
+    @Autowired
+    private UserRepository userRepository;
 
     @Autowired
-    public UserService(UserRepository userRepository, PasswordEncoder passwordEncoder) {
-        this.userRepository = userRepository;
-        this.passwordEncoder = passwordEncoder;
-    }
+    private SmsHistoryRepository smsHistoryRepository;
 
-    public User signUp(UserSignUpRequest signUpRequest) {
-        // 비밀번호 암호화
-        String encodedPassword = passwordEncoder.encode(signUpRequest.getPassword());
+    @Autowired
+    private PasswordEncoder passwordEncoder;
 
-        // User 객체 생성
-        User user = new User();
-        user.setPhoneNumber(signUpRequest.getPhoneNumber());
-        user.setGender(signUpRequest.getGender());
-        user.setAge(signUpRequest.getAge());
-        user.setHobby(signUpRequest.getHobby());
-        user.setLocation(signUpRequest.getLocation());
-        user.setPassword(encodedPassword);
-
-        // 회원 정보 저장
+    public void registerUser(UserDto userDto) {
+        String encryptedPassword = passwordEncoder.encode(userDto.getPhoneNumber());
+        User user = User.builder()
+                .phoneNumber(userDto.getPhoneNumber())
+                .password(encryptedPassword)
+                .gender(userDto.getGender())
+                .birthDate(userDto.getBirthDate())
+                .hobbies(userDto.getHobbies())
+                .region(userDto.getRegion())
+                .profileImage(userDto.getProfileImage())
+                .paid(userDto.isPaid())
+                .active(userDto.isActive())
+                .smsVerificationTimestamp(userDto.getSmsVerificationTimestamp())
+                .build();
         userRepository.save(user);
-
-        return user;
     }
 
-    public Optional<User> getUserByPhoneNumber(String phoneNumber) throws UserNotFoundException {
-        return userRepository.findByPhoneNumber(phoneNumber);
-    }
+    // 다른 메서드
 }
