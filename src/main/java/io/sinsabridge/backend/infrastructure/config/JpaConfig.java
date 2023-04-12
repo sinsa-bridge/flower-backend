@@ -1,6 +1,7 @@
 package io.sinsabridge.backend.infrastructure.config;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.domain.EntityScan;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.env.Environment;
@@ -15,7 +16,9 @@ import org.springframework.transaction.PlatformTransactionManager;
 import javax.sql.DataSource;
 
 @Configuration
-@EnableJpaRepositories(basePackages = {"io.sinsabridge.backend.infrastructure.repository", "io.sinsabridge.backend.domain.repository"})
+@EnableJpaRepositories(basePackages = {"io.sinsabridge.backend.**.repository"})
+@EntityScan(basePackages = {"io.sinsabridge.backend.**.entity"})
+
 public class JpaConfig {
 
     @Autowired
@@ -39,7 +42,7 @@ public class JpaConfig {
 
         LocalContainerEntityManagerFactoryBean em = new LocalContainerEntityManagerFactoryBean();
         em.setDataSource(dataSource());
-        em.setPackagesToScan("io.sinsabridge.backend.domain.entity");
+        em.setPackagesToScan("io.sinsabridge.backend.**.entity");
         em.setJpaVendorAdapter(vendorAdapter);
         return em;
     }

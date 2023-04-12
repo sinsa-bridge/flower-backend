@@ -2,24 +2,32 @@
 package io.sinsabridge.backend.application.service;
 
 import io.sinsabridge.backend.domain.entity.User;
-import io.sinsabridge.backend.domain.repository.SmsHistoryRepository;
 import io.sinsabridge.backend.domain.repository.UserRepository;
 import io.sinsabridge.backend.presentation.dto.UserDto;
-import org.springframework.beans.factory.annotation.Autowired;
+import io.sinsabridge.backend.sms.service.SmsService;
+import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 @Service
+@RequiredArgsConstructor
 public class UserService {
 
-    @Autowired
-    private UserRepository userRepository;
+    private final UserRepository userRepository;
+    private final PasswordEncoder passwordEncoder;
+    private final SmsService smsService;
 
-    @Autowired
-    private SmsHistoryRepository smsHistoryRepository;
+    public void signUp(User user, String code) {
+        String phoneNumber = user.getPhoneNumber();
+        boolean isVerified = smsService.verifySmsCode(phoneNumber, code);
 
-    @Autowired
-    private PasswordEncoder passwordEncoder;
+        if (isVerified) {
+            User savedUser = userRepository.save(user);
+          //  smsService.updateSmsVerification(savedUser);
+        } else {
+            throw new IllegalArgumentException("SMS verification failed");
+        }
+    }
 
     public void registerUser(UserDto userDto) {
         String encryptedPassword = passwordEncoder.encode(userDto.getPhoneNumber());
