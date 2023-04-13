@@ -19,6 +19,7 @@ public class SmsSendResponse {
     private String success_cnt;
     private String error_cnt;
     private String msg_type;
+    private String verificationCode; // 추가된 프로퍼티
 
 
 

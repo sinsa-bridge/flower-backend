@@ -2,6 +2,7 @@ package io.sinsabridge.backend.application.service;
 
 import io.sinsabridge.backend.domain.entity.User;
 import io.sinsabridge.backend.domain.repository.UserRepository;
+import io.sinsabridge.backend.presentation.exception.UserAlreadyExistsException;
 import io.sinsabridge.backend.presentation.exception.UserNotFoundException;
 import io.sinsabridge.backend.sms.service.SmsService;
 import lombok.RequiredArgsConstructor;
@@ -10,6 +11,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.Optional;
 
 @Service
@@ -34,7 +36,12 @@ public class UserService {
 
     // 사용자 등록 메서드
     public void registerUser(User userDto) {
-        String encryptedPassword = passwordEncoder.encode(userDto.getPhoneNumber());
+
+        // 중복 사용자 확인
+        checkIfUserExists(userDto.getPhoneNumber());
+
+
+        String encryptedPassword = passwordEncoder.encode(userDto.getPassword());
         User user = User.builder()
                 .phoneNumber(userDto.getPhoneNumber())
                 .password(encryptedPassword)
@@ -45,10 +52,19 @@ public class UserService {
                 .profileImage(userDto.getProfileImage())
                 .paid(userDto.isPaid())
                 .active(userDto.isActive())
-                .smsVerificationTimestamp(userDto.getSmsVerificationTimestamp())
+                //.smsVerificationTimestamp(userDto.getSmsVerificationTimestamp())
+                .smsVerificationTimestamp(LocalDateTime.now()) // 현재 시간으로 설정
+
                 .build();
         userRepository.save(user);
     }
+
+    private void checkIfUserExists(String phoneNumber) {
+        userRepository.findByPhoneNumber(phoneNumber).ifPresent(user -> {
+            throw new UserAlreadyExistsException("중복된 전화번호가 존재합니다.");
+        });
+    }
+
 
     // SMS 인증 업데이트 메서드
     public void updateSmsVerification(User user) {

@@ -8,13 +8,12 @@ import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
-
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
 @Entity
-@Table(name = "users")
+@Table(name = "Users")
 public class User {
 
     @Id
@@ -30,28 +29,28 @@ public class User {
     @Column(nullable = false)
     private String gender;
 
-    @Column(nullable = false)
-    private LocalDateTime birthDate;
+    @Column(nullable = true)
+    private String birthDate;
 
-    @Column(nullable = false)
+    @Column
     private String hobbies;
 
-    @Column(nullable = false)
+    @Column
     private String region;
 
-    @Column(nullable = false)
+    @Column
     private String profileImage;
 
-    @Column(nullable = false)
-    private boolean paid;
+    @Column
+    private boolean paid ;
 
-    @Column(nullable = false)
+    @Column
     private boolean active;
 
-    @Column(nullable = false)
+    @Column
     private boolean smsVerified;
 
-    @Column(nullable = false)
+    @Column
     private LocalDateTime smsVerificationTimestamp;
 
     public void setSmsVerified(boolean smsVerified) {

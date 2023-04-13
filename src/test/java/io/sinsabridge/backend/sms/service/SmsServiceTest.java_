@@ -8,6 +8,9 @@ import io.sinsabridge.backend.sms.domain.entity.SmsHistory;
 import io.sinsabridge.backend.sms.domain.repository.SmsHistoryRepository;
 import io.sinsabridge.backend.sms.domain.repository.SmsVerificationRepository;
 import io.sinsabridge.backend.domain.repository.UserRepository;
+import static org.assertj.core.api.Assertions.assertThat;
+
+
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -39,7 +42,7 @@ public class SmsServiceTest {
     @Mock
     private UserRepository userRepository;
 
-    @Test
+    /*@Test
     void testSendVerificationCode() {
         // given
         String phoneNumber = "01012345678";
@@ -64,5 +67,44 @@ public class SmsServiceTest {
         assertTrue(response.isSuccess());
         verify(smsSender, times(1)).send(any(SmsSendRequest.class));
         verify(smsHistoryRepository, times(1)).save(any(SmsHistory.class));
+    }*/
+
+    @Test
+    void testSendVerificationCode() {
+        // given
+        String phoneNumber = "01012345678";
+        String ipAddress = "192.168.0.1";
+        String result_code = "1";
+        String verificationCode = "1234";
+
+        SmsSendResponse mockResponse = SmsSendResponse.builder()
+                .result_code(result_code)
+                .message("success")
+                .msg_id("12345")
+                .success_cnt("1")
+                .error_cnt("0")
+                .msg_type("SMS")
+                .verificationCode(verificationCode)
+                .build();
+
+        when(smsSender.send(any(SmsSendRequest.class))).thenReturn(mockResponse);
+
+        // when
+        SmsSendResponse response = smsService.sendVerificationCode(phoneNumber, ipAddress);
+
+        // then
+        assertTrue(response.isSuccess());
+        verify(smsSender, times(1)).send(any(SmsSendRequest.class));
+
+        // SmsHistory 객체 생성 후 save() 메소드 호출
+        SmsHistory smsHistory = SmsHistory.builder()
+                .phoneNumber(phoneNumber)
+                .verificationCode(verificationCode)
+                .build();
+        verify(smsHistoryRepository, times(1)).save(smsHistory);
+     //   assertThat(smsHistory.getPhoneNumber()).isEqualTo(phoneNumber);
+       // assertThat(smsHistory.getVerificationCode()).isEqualTo(verificationCode);
     }
+
+
 }

@@ -24,11 +24,15 @@ public class SmsHistory {
     @Column(nullable = false)
     private String ipAddress;
 
+    @Column
+    private String verificationCode;
+
     @Builder
-    public SmsHistory(String phoneNumber, LocalDateTime sentAt, String ipAddress) {
+    public SmsHistory(String phoneNumber, LocalDateTime sentAt, String ipAddress, String verificationCode) {
         this.phoneNumber = phoneNumber;
         this.sentAt = sentAt;
         this.ipAddress = ipAddress;
+        this.verificationCode = verificationCode;
     }
 
     public LocalDateTime getSentAt() {

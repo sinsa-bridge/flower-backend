@@ -39,7 +39,6 @@ public class UserDetailsServiceImplTest {
                 .phoneNumber("01012345678")
                 .password("password")
                 .gender("male")
-                .birthDate(LocalDateTime.of(1990, 1, 1, 0, 0))
                 .hobbies("coding")
                 .region("Seoul")
                 .profileImage("image.jpg")

@@ -14,14 +14,27 @@ import java.time.LocalDateTime;
 public class UserDto {
 
     private String phoneNumber;
+
     private String password;
+
     private String gender;
-    private LocalDateTime birthDate;
+
+    private String birthDate;
+
     private String hobbies;
+
     private String region;
+
     private String profileImage;
-    private boolean paid;
+
+    private boolean paid ;
+
     private boolean active;
+
+    private boolean smsVerified;
+
     private LocalDateTime smsVerificationTimestamp;
+
+
 
 }
