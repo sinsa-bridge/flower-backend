@@ -5,7 +5,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.ComponentScan;
 
 @SpringBootApplication
-@ComponentScan(basePackages = {"io.sinsabridge.backend.**.service","io.sinsabridge.backend.**.repository"})
+@ComponentScan(basePackages = {"io.sinsabridge.backend"})
 public class SinSaBrIdGeApplication {
 
     public static void main(String[] args) {
