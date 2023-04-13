@@ -131,13 +131,14 @@ public class UserRestControllerTest {
                         .param("page", "0")
                         .param("size", "2"))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.content", hasSize(2)))
-                .andExpect(jsonPath("$.content[0].id", is(1)))
-                .andExpect(jsonPath("$.content[1].id", is(2)));
+                .andExpect(jsonPath("$._embedded.userList", hasSize(2))) // JSON 경로 변경
+                .andExpect(jsonPath("$._embedded.userList[0].id", is(1))) // JSON 경로 변경
+                .andExpect(jsonPath("$._embedded.userList[1].id", is(2))); // JSON 경로 변경
 
         // findAllUsers가 호출되었는지 검증
         verify(userService, times(1)).findAllUsers(any(Pageable.class));
     }
+
 
     @Test
     public void testCreateUserCase2() throws Exception {

@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.*;
 import javax.validation.Valid;
 import java.net.URI;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
@@ -29,12 +30,19 @@ public class UserRestController {
 
     @GetMapping("/{id}")
     public ResponseEntity<EntityModel<User>> getUser(@PathVariable Long id) {
-        User user = userService.findById(id);
+        Optional<User> optionalUser = userService.findById(id);
+
+        if (!optionalUser.isPresent()) {
+            return ResponseEntity.notFound().build();
+        }
+
+        User user = optionalUser.get();
         EntityModel<User> userEntityModel = EntityModel.of(user);
         userEntityModel.add(linkTo(methodOn(UserRestController.class).getUser(id)).withSelfRel());
         userEntityModel.add(linkTo(methodOn(UserRestController.class).getAllUsers(null)).withRel("users"));
         return ResponseEntity.ok(userEntityModel);
     }
+
 
     @PostMapping
     public ResponseEntity<EntityModel<User>> createUser(@Valid @RequestBody User user) {
