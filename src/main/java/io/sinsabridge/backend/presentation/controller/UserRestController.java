@@ -13,6 +13,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
+import java.net.URI;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -40,7 +41,12 @@ public class UserRestController {
         userService.registerUser(user);
         EntityModel<User> userEntityModel = EntityModel.of(user);
         userEntityModel.add(linkTo(methodOn(UserRestController.class).getUser(user.getId())).withSelfRel());
-        return ResponseEntity.ok(userEntityModel);
+
+        // 생성된 리소스의 URI를 가져옵니다.
+        URI location = linkTo(methodOn(UserRestController.class).getUser(user.getId())).toUri();
+
+        // 201 (Created) 상태 코드와 함께 생성된 리소스의 URI를 반환합니다.
+        return ResponseEntity.created(location).body(userEntityModel);
     }
 
     @PutMapping("/{id}")
@@ -72,4 +78,6 @@ public class UserRestController {
         CollectionModel<EntityModel<User>> userCollectionModel = CollectionModel.of(users, link);
         return ResponseEntity.ok(userCollectionModel);
     }
+
+
 }

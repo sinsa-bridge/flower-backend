@@ -48,29 +48,32 @@ public class UserRestControllerTest {
     // 사용자 생성 테스트
     @Test
     public void testCreateUserCase1() throws Exception {
-        // 예제 사용자 생성
+        // given: 테스트에 필요한 변수를 설정합니다.
         User user = new User();
         user.setId(1L);
         user.setPhoneNumber("01012345678");
 
-        // UserService의 registerUser 메서드가 예제 사용자를 반환하도록 설정
+        // UserService가 예제 사용자를 반환하도록 설정합니다.
         doAnswer(invocation -> {
             User userArg = invocation.getArgument(0);
             userArg.setId(1L);
             return null;
         }).when(userService).registerUser(any(User.class));
 
-        // POST 요청을 보내고 응답을 검증
+        // when: POST 요청을 보내고 응답을 검증합니다.
         mockMvc.perform(post("/api/users")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(user)))
+
+                // then: 응답 상태 코드와 body를 검증합니다.
                 .andExpect(status().isCreated())
                 .andExpect(jsonPath("id").value(1L))
                 .andExpect(jsonPath("phoneNumber").value("01012345678"));
 
-        // registerUser가 호출되었는지 검증
+        // verify: UserService의 registerUser 메서드가 한 번 호출되었는지 검증합니다.
         verify(userService, times(1)).registerUser(any(User.class));
     }
+
 
     // 사용자 정보 업데이트 테스트
     @Test
