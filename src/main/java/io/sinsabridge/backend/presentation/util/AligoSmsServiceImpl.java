@@ -1,11 +1,14 @@
 package io.sinsabridge.backend.presentation.util;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import io.sinsabridge.backend.sms.domain.entity.SmsHistory;
+import io.sinsabridge.backend.sms.domain.repository.SmsHistoryRepository;
 import io.sinsabridge.backend.sms.presentation.dto.SmsSendRequest;
 import io.sinsabridge.backend.sms.presentation.dto.SmsSendResponse;
 import io.sinsabridge.backend.sms.service.SmsSender;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.*;
 import org.springframework.http.converter.FormHttpMessageConverter;
@@ -35,10 +38,18 @@ public class AligoSmsServiceImpl implements SmsSender {
 
     private static final String API_URL = "https://apis.aligo.in/send/";
 
+    @Autowired
+    private SmsHistoryRepository smsHistoryRepository;
+
     @Override
     public SmsSendResponse send(SmsSendRequest request) {
         RestTemplate restTemplate = createRestTemplate();
         HttpHeaders headers = createHeaders();
+
+        // 4자리 인증 코드 생성
+        String code = generateRandomCode();
+
+        request.setMsg("인증 코드: " + code);
 
         MultiValueMap<String, String> map = createRequestBody(request);
 
@@ -54,11 +65,29 @@ public class AligoSmsServiceImpl implements SmsSender {
             );
             responseBody = responseEntity.getBody();
             logger.info("result sms : {}", responseBody);
+
+            // 문자 메시지 발송 기록을 저장합니다.
+            saveSmsHistory(request.getReceiver(), responseBody);
         } catch (Exception e) {
             logger.error("Error occurred while sending SMS", e);
         }
         return responseBody;
     }
+
+    // 기존 메서드들은 그대로 두고, saveSmsHistory() 메서드만 수정합니다.
+
+    /**
+     * 문자 메시지 발송 기록을 저장하는 메서드입니다.
+     *
+     * @param phoneNumber 사용자가 입력한 전화번호
+     * @param response    문자 발송 응답 객체
+     */
+    private void saveSmsHistory(String phoneNumber, SmsSendResponse response) {
+        SmsHistory smsHistory = response.toSmsHistory(phoneNumber);
+        smsHistoryRepository.save(smsHistory);
+    }
+
+    // 기존 메서드들은 그대로 유지합니다.
 
     private RestTemplate createRestTemplate() {
         RestTemplate restTemplate = new RestTemplate();
@@ -92,9 +121,18 @@ public class AligoSmsServiceImpl implements SmsSender {
         List<MediaType> supportedMediaTypes = new ArrayList<>(converter.getSupportedMediaTypes());
         supportedMediaTypes.add(MediaType.TEXT_HTML);
         converter.setSupportedMediaTypes(supportedMediaTypes);
-
         converters.add(converter);
         return converters;
+    }
+
+    /**
+     * 4자리 인증 코드를 생성하는 메서드입니다.
+     *
+     * @return 생성된 인증 코드
+     */
+    private String generateRandomCode() {
+        int code = (int) (Math.random() * 9000) + 1000;
+        return String.valueOf(code);
     }
 
 }

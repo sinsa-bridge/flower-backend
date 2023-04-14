@@ -46,6 +46,9 @@ public class UserRestController {
 
     @PostMapping
     public ResponseEntity<EntityModel<User>> createUser(@Valid @RequestBody User user) {
+        if (user == null) {
+            return ResponseEntity.badRequest().build();
+        }
         userService.registerUser(user);
         EntityModel<User> userEntityModel = EntityModel.of(user);
         userEntityModel.add(linkTo(methodOn(UserRestController.class).getUser(user.getId())).withSelfRel());
@@ -59,6 +62,11 @@ public class UserRestController {
 
     @PutMapping("/{id}")
     public ResponseEntity<EntityModel<User>> updateUser(@PathVariable Long id, @Valid @RequestBody User userUpdates) {
+        // userUpdates가 null인 경우 방어적으로 처리
+        if (userUpdates == null) {
+            return ResponseEntity.badRequest().build();
+        }
+
         User updatedUser = userService.updateUser(id, userUpdates);
         EntityModel<User> userEntityModel = EntityModel.of(updatedUser);
         userEntityModel.add(linkTo(methodOn(UserRestController.class).getUser(id)).withSelfRel());
@@ -67,6 +75,11 @@ public class UserRestController {
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteUser(@PathVariable Long id) {
+        // id가 null인 경우 방어적으로 처리
+        if (id == null) {
+            return ResponseEntity.badRequest().build();
+        }
+
         userService.deleteUser(id);
         return ResponseEntity.noContent().build();
     }

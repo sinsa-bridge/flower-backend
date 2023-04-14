@@ -25,17 +25,36 @@ public class SmsHistory {
     private String ipAddress;
 
     @Column
-    private String verificationCode;
+    private String verificationCode; // 인증에 사용된 4자리 코드
+
+    @Column(nullable = false) // 변경: nullable 속성 추가
+    private String resultCode;
+
+    @Column(nullable = false) // 변경: nullable 속성 추가
+    private String message;
+
+    @Column(nullable = false) // 변경: nullable 속성 추가
+    private String msgId;
+
+    @Column(nullable = false) // 변경: nullable 속성 추가
+    private int successCnt; // 변경: int 타입으로 수정
+
+    @Column(nullable = false) // 변경: nullable 속성 추가
+    private int errorCnt; // 변경: int 타입으로 수정
+
+    @Column(nullable = false) // 변경: nullable 속성 추가
+    private String msgType;
 
     @Builder
-    public SmsHistory(String phoneNumber, LocalDateTime sentAt, String ipAddress, String verificationCode) {
+    public SmsHistory(String phoneNumber, String verificationCode, String resultCode, String message, String msgId, int successCnt, int errorCnt, String msgType) {
         this.phoneNumber = phoneNumber;
-        this.sentAt = sentAt;
-        this.ipAddress = ipAddress;
+        this.sentAt = LocalDateTime.now(); // 자동으로 보낸 시간 저장
         this.verificationCode = verificationCode;
-    }
-
-    public LocalDateTime getSentAt() {
-        return sentAt;
+        this.resultCode = resultCode;
+        this.message = message;
+        this.msgId = msgId;
+        this.successCnt = successCnt;
+        this.errorCnt = errorCnt;
+        this.msgType = msgType;
     }
 }

@@ -1,4 +1,3 @@
-// JwtAuthenticationFilter.java
 package io.sinsabridge.backend.infrastructure.filter;
 
 import com.auth0.jwt.JWT;
@@ -42,8 +41,10 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
     protected void successfulAuthentication(HttpServletRequest request, HttpServletResponse response, FilterChain chain,
                                             Authentication authResult) throws IOException, ServletException {
         String phoneNumber = ((org.springframework.security.core.userdetails.User) authResult.getPrincipal()).getUsername();
-        Algorithm algorithm = Algorithm.HMAC256(jwtConfig.getSecretKey());
-        String token = JWT.create().withSubject(phoneNumber).withExpiresAt(new Date(System.currentTimeMillis() + jwtConfig.getTokenValidity())).sign(algorithm);
-        response.addHeader("Authorization", "Bearer " + token);
+        String token = JWT.create()
+                .withSubject(phoneNumber)
+                .withExpiresAt(new Date(System.currentTimeMillis() + jwtConfig.getExpirationTime()))
+                .sign(Algorithm.HMAC512(jwtConfig.getSecret()));
+        response.addHeader(jwtConfig.getHeaderString(), jwtConfig.getTokenPrefix() + token);
     }
 }

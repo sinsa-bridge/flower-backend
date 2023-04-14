@@ -1,4 +1,3 @@
-// UserRepository.java
 package io.sinsabridge.backend.domain.repository;
 
 import io.sinsabridge.backend.domain.entity.User;

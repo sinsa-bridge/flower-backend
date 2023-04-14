@@ -37,7 +37,7 @@ public class UserServiceTest {
                 .id(1L)
                 .phoneNumber("01012345678")
                 .password("password")
-                .gender("male")
+                .gender(User.Gender.MALE)
                 .hobbies("coding")
                 .region("Seoul")
                 .profileImage("image.jpg")

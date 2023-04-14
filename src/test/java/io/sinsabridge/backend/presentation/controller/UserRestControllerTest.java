@@ -116,8 +116,8 @@ public class UserRestControllerTest {
     @Test
     public void testGetAllUsers() throws Exception {
         // 예제 사용자 생성
-        User user1 = createUser(1L, "010-1234-5678", "password1", "MALE");
-        User user2 = createUser(2L, "010-2345-6789", "password2", "FEMALE");
+        User user1 = createUser(1L, "01012345678", "password1", User.Gender.MALE);
+        User user2 = createUser(2L, "01023456789", "password2", User.Gender.FEMALE);
 
         // 페이징 처리된 사용자 목록 생성
         List<User> users = Arrays.asList(user1, user2);
@@ -143,7 +143,7 @@ public class UserRestControllerTest {
     @Test
     public void testCreateUserCase2() throws Exception {
         // 예제 사용자 생성
-        User user = createUser(null, "010-1234-5678", "password", "MALE");
+        User user = createUser(null, "010-1234-5678", "password", User.Gender.MALE);
 
         // userService의 registerUser 메서드가 호출되었을 때 아무 작업도 수행하지 않도록 설정
         doNothing().when(userService).registerUser(any(User.class));
@@ -155,13 +155,13 @@ public class UserRestControllerTest {
                 .andExpect(status().isCreated())
                 .andExpect(jsonPath("$.phoneNumber", is(user.getPhoneNumber())))
                 .andExpect(jsonPath("$.password", is(user.getPassword())))
-                .andExpect(jsonPath("$.gender", is(user.getGender())));
+                .andExpect(jsonPath("$.gender", is(user.getGender().toString()))); // 수정된 부분
 
         // registerUser가 호출되었는지 검증
         verify(userService, times(1)).registerUser(any(User.class));
     }
 
-    private User createUser(Long id, String phoneNumber, String password, String gender) {
+    private User createUser(Long id, String phoneNumber, String password, User.Gender gender) {
         return User.builder()
                 .id(id)
                 .phoneNumber(phoneNumber)
