@@ -2,6 +2,7 @@ package io.sinsabridge.backend.application.service;
 
 import io.sinsabridge.backend.domain.entity.User;
 import io.sinsabridge.backend.domain.repository.UserRepository;
+import io.sinsabridge.backend.presentation.dto.UserDto;
 import io.sinsabridge.backend.presentation.exception.UserAlreadyExistsException;
 import io.sinsabridge.backend.presentation.exception.UserNotFoundException;
 import io.sinsabridge.backend.sms.domain.repository.SmsHistoryRepository;
@@ -49,7 +50,7 @@ public class UserService {
     }
 
     // 사용자 등록 메서드
-    public void registerUser(User userDto) {
+    public UserDto registerUser(UserDto userDto) {
         // 널 체크
         Objects.requireNonNull(userDto, "사용자 정보가 없습니다.");
 
@@ -61,15 +62,11 @@ public class UserService {
                 .phoneNumber(userDto.getPhoneNumber())
                 .password(encryptedPassword)
                 .gender(userDto.getGender())
-                .birthDate(userDto.getBirthDate())
-                .hobbies(userDto.getHobbies())
                 .region(userDto.getRegion())
-                .profileImage(userDto.getProfileImage())
-                .paid(userDto.isPaid())
-                .active(userDto.isActive())
                 .smsVerificationTimestamp(LocalDateTime.now()) //현재 시간으로 설정
                 .build();
         userRepository.save(user);
+        return userDto;
     }
 
     private void checkIfUserExists(String phoneNumber) {
@@ -102,14 +99,14 @@ public class UserService {
     }
 
     // 사용자 정보를 업데이트하는 메서드
-    public User updateUser(Long id, User userUpdates) {
+    public User updateUser(Long id, UserDto userUpdates) {
         // 널 체크
         Objects.requireNonNull(id, "사용자 ID가 없습니다.");
         Objects.requireNonNull(userUpdates, "사용자 정보가 없습니다.");
 
         Optional<User> user = findById(id);
-        // 필요한 필드들을 업데이트하세요.
-        // 예시: user.setPhoneNumber(userUpdates.getPhoneNumber());
+
+
         if (user.isPresent()) {
             userRepository.save(user.get());
         }

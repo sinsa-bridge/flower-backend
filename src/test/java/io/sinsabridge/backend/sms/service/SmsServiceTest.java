@@ -57,14 +57,14 @@ public class SmsServiceTest {
                 .success_cnt("1")
                 .error_cnt("0")
                 .msg_type("SMS")
-                .verificationCode(verificationCode)
+                .verification_code(verificationCode)
                 .build();
 
         when(smsSender.send(any(SmsSendRequest.class))).thenReturn(mockResponse);
 
         // when
         // sendVerificationCode 메소드 호출하고
-        SmsSendResponse response = smsService.sendVerificationCode(phoneNumber, ipAddress);
+        SmsSendResponse response = smsService.sendVerificationCode(phoneNumber);
 
         // then
         // 결과가 성공적인지 확인해 봐

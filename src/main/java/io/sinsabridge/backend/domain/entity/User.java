@@ -21,15 +21,20 @@ public class User {
     private String phoneNumber;
 
     @Column(nullable = false)
+    private String nickName;
+
+    @Column(nullable = false)
     private String password;
 
     @Enumerated(EnumType.STRING)
     private Gender gender;
 
-    private LocalDate birthDate;
+    @Column(nullable = false)
+    private LocalDate age;
 
     private String hobbies;
 
+    @Column(nullable = false)
     private String region;
 
     private String profileImage;

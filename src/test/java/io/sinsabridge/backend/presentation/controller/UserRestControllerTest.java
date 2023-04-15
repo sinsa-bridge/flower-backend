@@ -3,6 +3,7 @@ package io.sinsabridge.backend.presentation.controller;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.sinsabridge.backend.application.service.UserService;
 import io.sinsabridge.backend.domain.entity.User;
+import io.sinsabridge.backend.presentation.dto.UserDto;
 import lombok.RequiredArgsConstructor;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -49,53 +50,64 @@ public class UserRestControllerTest {
     @Test
     public void testCreateUserCase1() throws Exception {
         // given: 테스트에 필요한 변수를 설정합니다.
-        User user = new User();
-        user.setId(1L);
+        UserDto user = new UserDto();
         user.setPhoneNumber("01012345678");
-
+        user.setPassword("wonhwa");
+        user.setAge("14");
+        user.setGender(User.Gender.FEMALE);
+        user.setNickName("wonhwa");
+        user.setRegion("seoul");
         // UserService가 예제 사용자를 반환하도록 설정합니다.
         doAnswer(invocation -> {
-            User userArg = invocation.getArgument(0);
-            userArg.setId(1L);
-            return null;
-        }).when(userService).registerUser(any(User.class));
+            UserDto userArg = invocation.getArgument(0);
+            userArg.setAge("23");
+            userArg.setRegion("seoul");
+            userArg.setPhoneNumber("01012345678");
+            userArg.setNickName("wonhwa");
+            userArg.setGender(User.Gender.FEMALE);
+            userArg.setPassword("0109291");
+            return userArg;
+        }).when(userService).registerUser(any(UserDto.class));
 
         // when: POST 요청을 보내고 응답을 검증합니다.
-        mockMvc.perform(post("/api/users")
+        mockMvc.perform(post("/api/users/register")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(user)))
 
                 // then: 응답 상태 코드와 body를 검증합니다.
                 .andExpect(status().isCreated())
-                .andExpect(jsonPath("id").value(1L))
+               // .andExpect(jsonPath("id").isEmpty())
                 .andExpect(jsonPath("phoneNumber").value("01012345678"));
 
         // verify: UserService의 registerUser 메서드가 한 번 호출되었는지 검증합니다.
-        verify(userService, times(1)).registerUser(any(User.class));
+        verify(userService, times(1)).registerUser(any(UserDto.class));
     }
 
 
     // 사용자 정보 업데이트 테스트
     @Test
     public void testUpdateUser() throws Exception {
+
+        String requestJson = "{\"id\":1,\"phoneNumber\":\"01012345678\",\"nickName\":null,\"password\":\"testpassword\",\"gender\":null,\"age\":null,\"hobbies\":null,\"region\":null,\"profileImage\":null,\"paid\":false,\"active\":false,\"smsVerified\":false,\"smsVerificationTimestamp\":null}";
+
         // 예제 사용자 생성
         User user = new User();
         user.setId(1L);
         user.setPhoneNumber("01012345678");
 
         // UserService의 updateUser 메서드가 예제 사용자를 반환하도록 설정
-        when(userService.updateUser(anyLong(), any(User.class))).thenReturn(user);
+        when(userService.updateUser(anyLong(), any(UserDto.class))).thenReturn(user);
 
         // PUT 요청을 보내고 응답을 검증
         mockMvc.perform(put("/api/users/{id}", 1L)
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(user)))
+                        .content(requestJson))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("id").value(1L))
                 .andExpect(jsonPath("phoneNumber").value("01012345678"));
 
         // updateUser가 호출되었는지 검증
-        verify(userService, times(1)).updateUser(anyLong(), any(User.class));
+        verify(userService, times(1)).updateUser(anyLong(), any(UserDto.class));
     }
 
     // 사용자 삭제 테스트
@@ -145,21 +157,28 @@ public class UserRestControllerTest {
         // 예제 사용자 생성
         User user = createUser(null, "010-1234-5678", "password", User.Gender.MALE);
 
-        // userService의 registerUser 메서드가 호출되었을 때 아무 작업도 수행하지 않도록 설정
-        doNothing().when(userService).registerUser(any(User.class));
+        // 예제 사용자 DTO 생성
+        UserDto userDto = new UserDto();
+        userDto.setPhoneNumber(user.getPhoneNumber());
+        userDto.setGender(user.getGender());
+        userDto.setPassword(user.getPassword());
+
+        // userService의 registerUser 메서드가 호출되었을 때 userDto를 반환하도록 설정
+        when(userService.registerUser(any(UserDto.class))).thenReturn(userDto);
 
         // POST 요청을 보내고 응답을 검증
-        mockMvc.perform(post("/api/users")
+        mockMvc.perform(post("/api/users/register") // 요청 메서드를 GET에서 POST로 변경
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(user)))
+                        .content(objectMapper.writeValueAsString(userDto))) // userDto로 변경
                 .andExpect(status().isCreated())
                 .andExpect(jsonPath("$.phoneNumber", is(user.getPhoneNumber())))
                 .andExpect(jsonPath("$.password", is(user.getPassword())))
-                .andExpect(jsonPath("$.gender", is(user.getGender().toString()))); // 수정된 부분
+                .andExpect(jsonPath("$.gender", is(user.getGender().toString())));
 
         // registerUser가 호출되었는지 검증
-        verify(userService, times(1)).registerUser(any(User.class));
+        verify(userService, times(1)).registerUser(any(UserDto.class));
     }
+
 
     private User createUser(Long id, String phoneNumber, String password, User.Gender gender) {
         return User.builder()

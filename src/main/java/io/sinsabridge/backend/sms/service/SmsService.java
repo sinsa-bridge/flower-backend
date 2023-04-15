@@ -24,7 +24,7 @@ public class SmsService {
     private final UserRepository userRepository;
 
     @Transactional
-    public SmsSendResponse sendVerificationCode(String phoneNumber, String ipAddress) {
+    public SmsSendResponse sendVerificationCode(String phoneNumber) {
         String verificationCode = generateVerificationCode(); // 인증 코드 생성해
 
         SmsSendRequest request = SmsSendRequest.builder()

@@ -7,8 +7,6 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.time.LocalDateTime;
-
 @Data
 @Builder
 @NoArgsConstructor
@@ -22,12 +20,12 @@ public class SmsSendResponse {
     private String success_cnt;
     private String error_cnt;
     private String msg_type;
-    private String verificationCode; // 추가된 프로퍼티
+    private String verification_code; // 추가된 프로퍼티
 
     public SmsHistory toSmsHistory(String phoneNumber) {
         return SmsHistory.builder()
                 .phoneNumber(phoneNumber)
-                .verificationCode(verificationCode)
+                .verificationCode(verification_code)
                 .resultCode(result_code)
                 .message(message)
                 .msgId(msg_id)
