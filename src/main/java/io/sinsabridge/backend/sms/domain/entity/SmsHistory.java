@@ -1,5 +1,6 @@
 package io.sinsabridge.backend.sms.domain.entity;
 
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -20,9 +21,6 @@ public class SmsHistory {
 
     @Column(nullable = false)
     private LocalDateTime sentAt;
-
-    @Column(nullable = false)
-    private String ipAddress;
 
     @Column
     private String verificationCode; // 인증에 사용된 4자리 코드
@@ -45,10 +43,12 @@ public class SmsHistory {
     @Column(nullable = false) // 변경: nullable 속성 추가
     private String msgType;
 
+
     @Builder
-    public SmsHistory(String phoneNumber, String verificationCode, String resultCode, String message, String msgId, int successCnt, int errorCnt, String msgType) {
+    public SmsHistory(Long id, String phoneNumber, LocalDateTime sentAt, String verificationCode, String resultCode, String message, String msgId, int successCnt, int errorCnt, String msgType) {
+        this.id = id;
         this.phoneNumber = phoneNumber;
-        this.sentAt = LocalDateTime.now(); // 자동으로 보낸 시간 저장
+        this.sentAt = sentAt;
         this.verificationCode = verificationCode;
         this.resultCode = resultCode;
         this.message = message;

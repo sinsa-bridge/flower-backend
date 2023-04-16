@@ -6,6 +6,7 @@ import io.sinsabridge.backend.domain.entity.User;
 import io.sinsabridge.backend.presentation.dto.UserDto;
 import io.sinsabridge.backend.sms.presentation.dto.SmsSendRequest;
 import io.sinsabridge.backend.sms.service.SmsSender;
+import io.sinsabridge.backend.sms.service.SmsService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -17,6 +18,7 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 import java.util.List;
 import java.util.Optional;
@@ -31,8 +33,7 @@ import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 public class UserRestController {
 
     private final UserService userService;
-    private final SmsSender smsSender;
-
+    private final SmsService smsService;
     /**
      * 모든 사용자를 조회하는 메서드야. 페이지 정보가 주어지면, 해당 페이지에 있는 사용자를 보여줄게!
      * 뭐 어렵지 않아, 그냥 사용자 목록을 가져오는 거야. 페이지 별로 나눠서 보여주는 거지!
@@ -64,16 +65,42 @@ public class UserRestController {
     // 문자 메시지 발송 요청 처리
     @PostMapping("/send-sms")
     public ResponseEntity<Void> sendSms(@RequestParam String phoneNumber) {
-        smsSender.send(new SmsSendRequest(phoneNumber));
+       // smsSender.send(new SmsSendRequest(phoneNumber));
+        smsService.sendVerificationCode(phoneNumber);
         return ResponseEntity.ok().build();
     }
 
     // 문자 메시지 인증 코드 확인 요청 처리
     @PostMapping("/verify-sms")
     public ResponseEntity<Boolean> verifySms(@RequestParam String phoneNumber,
-                                             @RequestParam String code) {
-        boolean verified = userService.verifySmsCode(phoneNumber, code);
+                                             @RequestParam String verificationCode) {
+        boolean verified = userService.verifySmsCode(phoneNumber, verificationCode);
         return ResponseEntity.ok(verified);
+    }
+    private String getClientIpAddress(HttpServletRequest request) {
+        String ipAddress = request.getHeader("X-Forwarded-For");
+
+        if (ipAddress == null || ipAddress.length() == 0 || "unknown".equalsIgnoreCase(ipAddress)) {
+            ipAddress = request.getHeader("Proxy-Client-IP");
+        }
+
+        if (ipAddress == null || ipAddress.length() == 0 || "unknown".equalsIgnoreCase(ipAddress)) {
+            ipAddress = request.getHeader("WL-Proxy-Client-IP");
+        }
+
+        if (ipAddress == null || ipAddress.length() == 0 || "unknown".equalsIgnoreCase(ipAddress)) {
+            ipAddress = request.getHeader("HTTP_CLIENT_IP");
+        }
+
+        if (ipAddress == null || ipAddress.length() == 0 || "unknown".equalsIgnoreCase(ipAddress)) {
+            ipAddress = request.getHeader("HTTP_X_FORWARDED_FOR");
+        }
+
+        if (ipAddress == null || ipAddress.length() == 0 || "unknown".equalsIgnoreCase(ipAddress)) {
+            ipAddress = request.getRemoteAddr();
+        }
+
+        return ipAddress;
     }
 
     // 회원 가입 요청 처리

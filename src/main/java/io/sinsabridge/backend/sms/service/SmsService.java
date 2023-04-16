@@ -29,13 +29,13 @@ public class SmsService {
 
         SmsSendRequest request = SmsSendRequest.builder()
                 .receiver(phoneNumber)
-                .msg("인증번호: " + verificationCode)
+                .msg(verificationCode)
                 .build();
 
         SmsSendResponse response = smsSender.send(request); // 문자 보내기
 
         if (response.isSuccess()) {
-            smsHistoryRepository.save(response.toSmsHistory(phoneNumber)); // 문자 발송 기록 저장해
+            smsHistoryRepository.save(response.toSmsHistory(phoneNumber,response)); // 문자 발송 기록 저장해
             SmsVerification smsVerification = new SmsVerification(); // 인증 정보 객체 만들어
             smsVerification.setPhoneNumber(phoneNumber); // 전화번호 저장해
             smsVerification.setVerificationCode(verificationCode); // 인증 코드 저장해
@@ -55,7 +55,7 @@ public class SmsService {
     }
 
     public boolean verifySmsCode(String phoneNumber, String code) {
-        SmsVerification smsVerification = smsVerificationRepository.findByPhoneNumber(phoneNumber); // 전화번호로 인증 정보 가져와
+        SmsVerification smsVerification = smsVerificationRepository.findByPhoneNumberAndVerificationCode(phoneNumber, code); // 전화번호로 인증 정보 가져와
 
         if (smsVerification != null && !smsVerification.isVerified()) { // 인증 정보가 있고, 아직 인증이 안 됐으면
             LocalDateTime now = LocalDateTime.now();

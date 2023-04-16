@@ -8,6 +8,20 @@
         </encoder>
     </appender>
 
+    <root level="DEBUG">
+        <appender-ref ref="STDOUT" />
+    </root>
+
+    <!-- Change Hibernate and JPA loggers -->
+    <logger name="org.hibernate.SQL" level="DEBUG">
+        <appender-ref ref="STDOUT" />
+    </logger>
+    <!-- Remove this logger
+    <logger name="org.hibernate.type.descriptor.sql" level="TRACE">
+        <appender-ref ref="STDOUT" />
+    </logger> -->
+
+    <!-- Keep the existing JDBC loggers -->
     <logger name="jdbc.sqlonly" level="INFO">
         <appender-ref ref="STDOUT" />
     </logger>
@@ -17,14 +31,11 @@
     <logger name="jdbc.audit" level="INFO">
         <appender-ref ref="STDOUT" />
     </logger>
+    <!-- Remove or change the level of these loggers
     <logger name="jdbc.resultset" level="INFO">
         <appender-ref ref="STDOUT" />
     </logger>
     <logger name="jdbc.resultsettable" level="INFO">
         <appender-ref ref="STDOUT" />
-    </logger>
-
-    <root level="INFO">
-        <appender-ref ref="STDOUT" />
-    </root>
+    </logger> -->
 </configuration>

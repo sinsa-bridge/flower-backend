@@ -13,5 +13,7 @@ public interface SmsVerificationRepository extends JpaRepository<SmsVerification
      * @param phoneNumber 전화번호
      * @return 조회된 SmsVerification 엔티티
      */
-    SmsVerification findByPhoneNumber(String phoneNumber);
+    SmsVerification findByPhoneNumberAndVerificationCode(String phoneNumber, String verificationCode);
+
+
 }

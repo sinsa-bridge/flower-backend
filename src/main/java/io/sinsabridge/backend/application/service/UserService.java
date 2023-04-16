@@ -27,8 +27,12 @@ public class UserService {
 
 
     // 문자 메시지 인증 코드 확인
-    public boolean verifySmsCode(String phoneNumber, String code) {
-        return smsHistoryRepository.findByPhoneNumberAndVerificationCode(phoneNumber, code).isPresent();
+    public boolean verifySmsCode(String phoneNumber, String verificationCode) {
+
+        // 인증 코드를 받아서 smshistory를 뒤진 후 있으면 true
+        // 없으면 false
+
+        return smsService.verifySmsCode(phoneNumber, verificationCode);
     }
 
 

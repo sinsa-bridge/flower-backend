@@ -47,9 +47,9 @@ public class AligoSmsServiceImpl implements SmsSender {
         HttpHeaders headers = createHeaders();
 
         // 4자리 인증 코드 생성
-        String code = generateRandomCode();
+        String verificationCode = request.getMsg();
 
-        request.setMsg("인증 코드: " + code);
+        request.setMsg("인증 코드: " + request.getMsg());
 
         MultiValueMap<String, String> map = createRequestBody(request);
 
@@ -66,8 +66,10 @@ public class AligoSmsServiceImpl implements SmsSender {
             responseBody = responseEntity.getBody();
             logger.info("result sms : {}", responseBody);
 
+            responseBody.setVerification_code(verificationCode);
+
             // 문자 메시지 발송 기록을 저장합니다.
-            saveSmsHistory(request.getReceiver(), responseBody);
+          //  saveSmsHistory(request.getReceiver(), responseBody);
         } catch (Exception e) {
             logger.error("Error occurred while sending SMS", e);
         }
@@ -83,7 +85,7 @@ public class AligoSmsServiceImpl implements SmsSender {
      * @param response    문자 발송 응답 객체
      */
     private void saveSmsHistory(String phoneNumber, SmsSendResponse response) {
-        SmsHistory smsHistory = response.toSmsHistory(phoneNumber);
+        SmsHistory smsHistory = response.toSmsHistory(phoneNumber, response);
         smsHistoryRepository.save(smsHistory);
     }
 

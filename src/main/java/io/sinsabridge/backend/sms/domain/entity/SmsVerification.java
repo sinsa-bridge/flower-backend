@@ -33,4 +33,12 @@ public class SmsVerification {
     @Column(name = "verification_time")
     private LocalDateTime verificationTime; // 인증 완료된 시간이 여기 저장되어야 해
 
+
+    @Column(nullable = false, updatable = false)
+    private LocalDateTime createdAt;
+
+    @PrePersist
+    protected void onCreate() {
+        createdAt = LocalDateTime.now();
+    }
 }
