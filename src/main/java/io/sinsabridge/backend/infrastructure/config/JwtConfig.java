@@ -1,7 +1,12 @@
 package io.sinsabridge.backend.infrastructure.config;
 
+import com.auth0.jwt.JWT;
+import com.auth0.jwt.algorithms.Algorithm;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.security.core.Authentication;
+
+import java.util.Date;
 
 @Configuration
 public class JwtConfig {
@@ -69,5 +74,13 @@ public class JwtConfig {
      */
     public long getExpirationTime() {
         return tokenValidity;
+    }
+
+    public String generateToken(Authentication authentication) {
+        String phoneNumber = ((org.springframework.security.core.userdetails.User) authentication.getPrincipal()).getUsername();
+        return JWT.create()
+                .withSubject(phoneNumber)
+                .withExpiresAt(new Date(System.currentTimeMillis() + getExpirationTime()))
+                .sign(Algorithm.HMAC512(getSecret()));
     }
 }

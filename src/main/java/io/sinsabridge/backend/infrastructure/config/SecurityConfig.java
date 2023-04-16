@@ -39,7 +39,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .authorizeRequests()
                 .antMatchers("/public/**").permitAll()
                 .antMatchers("/api/users/**").permitAll() // 사용자 관련 엔드포인트에 대한 인증을 요구하지 않습니다.
-                .antMatchers("/actuator/**").permitAll() // 사용자 관련 엔드포인트에 대한 인증을 요구하지 않습니다.
+                .antMatchers("/swagger-ui/**").permitAll() // 사용자 관련 엔드포인트에 대한 인증을 요구하지 않습니다.
+                .antMatchers("/v3/**").permitAll() // 사용자 관련 엔드포인트에 대한 인증을 요구하지 않습니다.
                 .anyRequest().authenticated()
                 .and()
                 .addFilter(new JwtAuthenticationFilter(authenticationManager(), jwtConfig))

@@ -2,6 +2,7 @@ package io.sinsabridge.backend.application.service;
 
 import io.sinsabridge.backend.domain.entity.User;
 import io.sinsabridge.backend.domain.repository.UserRepository;
+import io.sinsabridge.backend.infrastructure.config.JwtConfig;
 import io.sinsabridge.backend.presentation.dto.UserDto;
 import io.sinsabridge.backend.presentation.exception.UserAlreadyExistsException;
 import io.sinsabridge.backend.presentation.exception.UserNotFoundException;
@@ -24,7 +25,7 @@ public class UserService {
     private final PasswordEncoder passwordEncoder;
     private final SmsService smsService;
     private final SmsHistoryRepository smsHistoryRepository;
-
+    private final JwtConfig jwtConfig;
 
     // 문자 메시지 인증 코드 확인
     public boolean verifySmsCode(String phoneNumber, String verificationCode) {
@@ -67,6 +68,8 @@ public class UserService {
                 .password(encryptedPassword)
                 .gender(userDto.getGender())
                 .region(userDto.getRegion())
+                .age(userDto.getAge())
+                .nickName(userDto.getNickName())
                 .smsVerificationTimestamp(LocalDateTime.now()) //현재 시간으로 설정
                 .build();
         userRepository.save(user);

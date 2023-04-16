@@ -45,8 +45,7 @@ public class SmsHistory {
 
 
     @Builder
-    public SmsHistory(Long id, String phoneNumber, LocalDateTime sentAt, String verificationCode, String resultCode, String message, String msgId, int successCnt, int errorCnt, String msgType) {
-        this.id = id;
+    public SmsHistory(String phoneNumber, LocalDateTime sentAt, String verificationCode, String resultCode, String message, String msgId, int successCnt, int errorCnt, String msgType) {
         this.phoneNumber = phoneNumber;
         this.sentAt = sentAt;
         this.verificationCode = verificationCode;

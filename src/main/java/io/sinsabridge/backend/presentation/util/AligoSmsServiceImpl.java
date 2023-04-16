@@ -46,7 +46,6 @@ public class AligoSmsServiceImpl implements SmsSender {
         RestTemplate restTemplate = createRestTemplate();
         HttpHeaders headers = createHeaders();
 
-        // 4자리 인증 코드 생성
         String verificationCode = request.getMsg();
 
         request.setMsg("인증 코드: " + request.getMsg());
@@ -89,8 +88,6 @@ public class AligoSmsServiceImpl implements SmsSender {
         smsHistoryRepository.save(smsHistory);
     }
 
-    // 기존 메서드들은 그대로 유지합니다.
-
     private RestTemplate createRestTemplate() {
         RestTemplate restTemplate = new RestTemplate();
         restTemplate.setMessageConverters(getHttpMessageConverters());
@@ -125,16 +122,6 @@ public class AligoSmsServiceImpl implements SmsSender {
         converter.setSupportedMediaTypes(supportedMediaTypes);
         converters.add(converter);
         return converters;
-    }
-
-    /**
-     * 4자리 인증 코드를 생성하는 메서드입니다.
-     *
-     * @return 생성된 인증 코드
-     */
-    private String generateRandomCode() {
-        int code = (int) (Math.random() * 9000) + 1000;
-        return String.valueOf(code);
     }
 
 }
